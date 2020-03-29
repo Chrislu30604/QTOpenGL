@@ -1,0 +1,60 @@
+#include "objloader.h"
+
+#include <QDebug>
+#include <QFile>
+
+ObjLoader::ObjLoader()
+{
+
+}
+
+bool ObjLoader::Load(QString fileName,
+                     QVector<QVector3D> &vPoints,
+                     QVector<QVector3D> &tPoints,
+                     QVector<Face> &faces) {
+    QVector3D temp3D;
+    Face f;
+
+    if(fileName.mid(fileName.lastIndexOf('.')) != ".obj"){
+        qDebug() << "file is not a obj file";
+        return false;
+    }
+
+    QFile objFile(fileName);
+    if(!objFile.open(QIODevice::ReadOnly)){
+       qDebug() << "open" << fileName << "failed";
+       return false;
+    }
+
+
+    while (!objFile.atEnd()) {
+        QString lineData = objFile.readLine();
+        lineData = lineData.trimmed(); // remove \n
+        QList<QString> strValues = lineData.split(' ');
+        QString dataType = strValues.takeFirst();
+        // qDebug() << strValues;
+        if (dataType == "v" || dataType == "vt" || dataType == "vn") {
+            temp3D.setX(strValues.at(0).toFloat());
+            temp3D.setY(strValues.at(1).toFloat());
+            temp3D.setZ(strValues.at(2).toFloat());
+
+            if(dataType == "v"){
+                vPoints.push_back(temp3D);
+            }else if(dataType == "vt"){
+                tPoints.push_back(temp3D);
+            }else if(dataType == "vn"){
+                vPoints.push_back(temp3D);
+            }
+        } else if (dataType == "f") {
+            qDebug() << strValues;
+            for (auto it = strValues.begin(); it != strValues.end(); ++it) {
+                QList<QString> pair = it->split("//");
+                f.v
+                qDebug() << it->split("//");
+            }
+        }
+    }
+    qDebug() << vPoints;
+    objFile.close();
+    return true;
+}
